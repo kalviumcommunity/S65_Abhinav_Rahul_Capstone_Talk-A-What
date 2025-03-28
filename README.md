@@ -17,7 +17,7 @@ This project is a language learning application inspired by Duolingo but designe
 - **Authentication**: JWT-based authentication
 - **File Uploads**: Multer for handling media files
 
-## Installation
+
 
 ### Prerequisites
 Ensure you have the following installed:
