@@ -1,4 +1,4 @@
-# S65_Abhinav_Rahul_Capstone_Talk-A-What-
+# S65_Abhinav_Rahul_Capstone_Talk-A-What
 # Talk-A-What! (MERN Stack)
 
 ## Overview
