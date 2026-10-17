@@ -43,5 +43,19 @@ Ensure you have the following installed:
 ## Contributing
 Feel free to contribute! Fork the repo and submit a pull request.
 
+## Day-by-Day Development Plan
+
+- **Day 1:** Finalize the project idea, requirements, and user flow.
+- **Day 2:** Create low-fidelity wireframes for the main application screens.
+- **Day 3:** Design the high-fidelity prototype in Figma.
+- **Day 4:** Set up the GitHub repository, README, and project structure.
+- **Day 5:** Develop the frontend layout and navigation using React and Tailwind CSS.
+- **Day 6:** Build the backend using Node.js, Express.js, and MongoDB.
+- **Day 7:** Implement user registration, login, and authentication.
+- **Day 8:** Develop lesson modules, vocabulary practice, and quizzes.
+- **Day 9:** Implement progress tracking and the admin lesson-management panel.
+- **Day 10:** Test the application, fix bugs, and improve usability.
+- **Day 11:** Complete documentation and prepare the final project demonstration.
+
 
 
