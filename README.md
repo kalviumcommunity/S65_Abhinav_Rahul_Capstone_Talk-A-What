@@ -58,13 +58,5 @@ Feel free to contribute! Fork the repo and submit a pull request.
 - **Day 11:** Complete documentation and prepare the final project demonstration.
 
 
-## Backend Deployment
-
-The Talk-A-What! backend API is deployed on Render.
-
-- **Backend URL:** https://s65-abhinav-rahul-capstone-talk-a-what.onrender.com
-- **Lessons API:** https://s65-abhinav-rahul-capstone-talk-a-what.onrender.com/api/lessons
-- **Platform:** Render
-
 
 
