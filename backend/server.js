@@ -63,3 +63,34 @@ app.get("/api/lessons/:id", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Talk-A-What API running at http://localhost:${PORT}`);
 });
+
+
+
+ // POST API: create a new lesson
+app.post("/api/lessons", (req, res) => {
+  const { title, description, level } = req.body;
+
+  if (!title || !description || !level) {
+    return res.status(400).json({
+      success: false,
+      message: "Title, description, and level are required",
+    });
+  }
+
+  const newLesson = {
+    id: lessons.length > 0
+      ? Math.max(...lessons.map((lesson) => lesson.id)) + 1
+      : 1,
+    title,
+    description,
+    level,
+  };
+
+  lessons.push(newLesson);
+
+  res.status(201).json({
+    success: true,
+    message: "Lesson created successfully",
+    data: newLesson,
+  });
+});
