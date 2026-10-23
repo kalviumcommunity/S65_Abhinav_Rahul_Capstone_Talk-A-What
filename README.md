@@ -58,7 +58,7 @@ Feel free to contribute! Fork the repo and submit a pull request.
 - **Day 11:** Complete documentation and prepare the final project demonstration.
 
 
-## Backend Deployment
+## Backend Deployment --
 
 The Talk-A-What! backend API is deployed on Render.
 
