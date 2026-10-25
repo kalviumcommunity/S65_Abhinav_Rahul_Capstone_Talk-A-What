@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const Lesson = require('./models/Lesson');
+const Question = require('./models/Question');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -176,6 +177,103 @@ app.get('/api/test-put', (req, res) => {
     success: true,
     message: 'Correct server is running'
   });
+});
+
+/* POST: Create a question linked to a lesson */
+app.post('/api/lessons/:id/questions', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid lesson ID'
+      });
+    }
+
+    const lesson = await Lesson.findById(id);
+
+    if (!lesson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lesson not found'
+      });
+    }
+
+    const { questionText, options, correctAnswer } = req.body;
+
+    if (
+      typeof questionText !== 'string' ||
+      !questionText.trim() ||
+      !Array.isArray(options) ||
+      options.length < 2 ||
+      !options.every(option => typeof option === 'string' && option.trim()) ||
+      typeof correctAnswer !== 'string' ||
+      !options.includes(correctAnswer)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Provide a question, at least two options, and a correct answer from those options'
+      });
+    }
+
+    const question = await Question.create({
+      questionText: questionText.trim(),
+      options: options.map(option => option.trim()),
+      correctAnswer,
+      lesson: lesson._id
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Question linked to lesson successfully',
+      data: question
+    });
+  } catch (error) {
+    console.error('Failed to create question:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create question'
+    });
+  }
+});
+
+/* GET: Retrieve all questions belonging to a lesson */
+app.get('/api/lessons/:id/questions', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid lesson ID'
+      });
+    }
+
+    const lesson = await Lesson.findById(id);
+
+    if (!lesson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lesson not found'
+      });
+    }
+
+    const questions = await Question.find({ lesson: lesson._id });
+
+    res.status(200).json({
+      success: true,
+      lesson: lesson.title,
+      count: questions.length,
+      data: questions
+    });
+  } catch (error) {
+    console.error('Failed to retrieve questions:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve questions'
+    });
+  }
 });
 
 // Handle unknown routes
