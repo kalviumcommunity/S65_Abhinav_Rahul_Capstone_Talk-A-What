@@ -1,6 +1,10 @@
 
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
+const Lesson = require('./models/Lesson');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -9,141 +13,164 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Sample lesson data
-let lessons = [
-  {
-    id: 1,
-    title: 'Basic Greetings',
-    description: 'Learn basic English greetings.',
-    level: 'Beginner'
-  },
-  {
-    id: 2,
-    title: 'Introducing Yourself',
-    description: 'Learn how to introduce yourself in English.',
-    level: 'Beginner'
-  },
-  {
-    id: 3,
-    title: 'Everyday Conversations',
-    description: 'Practice everyday English conversations.',
-    level: 'Intermediate'
-  }
-];
+// Check MongoDB ID format
+const isValidLessonId = (id) => mongoose.isValidObjectId(id);
 
-// GET: Retrieve all lessons
-app.get('/api/lessons', (req, res) => {
-  res.status(200).json({
-    success: true,
-    count: lessons.length,
-    data: lessons
-  });
+// GET: Retrieve all lessons from MongoDB
+app.get('/api/lessons', async (req, res) => {
+  try {
+    const lessons = await Lesson.find().sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: lessons.length,
+      data: lessons
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve lessons'
+    });
+  }
 });
 
-// GET: Retrieve one lesson by ID
-app.get('/api/lessons/:id', (req, res) => {
-  const lessonId = Number(req.params.id);
+// GET: Retrieve one lesson by MongoDB ID
+app.get('/api/lessons/:id', async (req, res) => {
+  try {
+    if (!isValidLessonId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid lesson ID'
+      });
+    }
 
-  const lesson = lessons.find(item => item.id === lessonId);
+    const lesson = await Lesson.findById(req.params.id);
 
-  if (!lesson) {
-    return res.status(404).json({
+    if (!lesson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lesson not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: lesson
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
-      message: 'Lesson not found'
+      message: 'Failed to retrieve lesson'
     });
   }
-
-  res.status(200).json({
-    success: true,
-    data: lesson
-  });
 });
 
-// POST: Create a new lesson
-app.post('/api/lessons', (req, res) => {
-  const { title, description, level } = req.body;
+// POST: Create and save a lesson in MongoDB
+app.post('/api/lessons', async (req, res) => {
+  try {
+    const { title, description, level } = req.body;
 
-  if (
-    typeof title !== 'string' || !title.trim() ||
-    typeof description !== 'string' || !description.trim() ||
-    typeof level !== 'string' || !level.trim()
-  ) {
-    return res.status(400).json({
+    if (
+      typeof title !== 'string' || !title.trim() ||
+      typeof description !== 'string' || !description.trim() ||
+      typeof level !== 'string' || !level.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title, description, and level are required'
+      });
+    }
+
+    const newLesson = await Lesson.create({
+      title: title.trim(),
+      description: description.trim(),
+      level: level.trim()
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Lesson created successfully',
+      data: newLesson
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+
+    res.status(500).json({
       success: false,
-      message: 'Title, description, and level are required'
+      message: 'Failed to create lesson'
     });
   }
-
-  const nextId = lessons.length
-    ? Math.max(...lessons.map(lesson => lesson.id)) + 1
-    : 1;
-
-  const newLesson = {
-    id: nextId,
-    title: title.trim(),
-    description: description.trim(),
-    level: level.trim()
-  };
-
-  lessons.push(newLesson);
-
-  res.status(201).json({
-    success: true,
-    message: 'Lesson created successfully',
-    data: newLesson
-  });
 });
 
-// PUT: Update an existing lesson
-app.put('/api/lessons/:id', (req, res) => {
-  const lessonId = Number(req.params.id);
+// PUT: Update an existing MongoDB lesson
+app.put('/api/lessons/:id', async (req, res) => {
+  try {
+    if (!isValidLessonId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid lesson ID'
+      });
+    }
 
-  if (!Number.isInteger(lessonId) || lessonId <= 0) {
-    return res.status(400).json({
+    const { title, description, level } = req.body;
+
+    if (
+      typeof title !== 'string' || !title.trim() ||
+      typeof description !== 'string' || !description.trim() ||
+      typeof level !== 'string' || !level.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title, description, and level are required'
+      });
+    }
+
+    const updatedLesson = await Lesson.findByIdAndUpdate(
+      req.params.id,
+      {
+        title: title.trim(),
+        description: description.trim(),
+        level: level.trim()
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+
+    if (!updatedLesson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lesson not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Lesson updated successfully',
+      data: updatedLesson
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+
+    res.status(500).json({
       success: false,
-      message: 'Invalid lesson ID'
+      message: 'Failed to update lesson'
     });
   }
-
-  const { title, description, level } = req.body;
-
-  if (
-    typeof title !== 'string' || !title.trim() ||
-    typeof description !== 'string' || !description.trim() ||
-    typeof level !== 'string' || !level.trim()
-  ) {
-    return res.status(400).json({
-      success: false,
-      message: 'Title, description, and level are required'
-    });
-  }
-
-  const lessonIndex = lessons.findIndex(
-    lesson => lesson.id === lessonId
-  );
-
-  if (lessonIndex === -1) {
-    return res.status(404).json({
-      success: false,
-      message: 'Lesson not found'
-    });
-  }
-
-  lessons[lessonIndex] = {
-    id: lessonId,
-    title: title.trim(),
-    description: description.trim(),
-    level: level.trim()
-  };
-
-  res.status(200).json({
-    success: true,
-    message: 'Lesson updated successfully',
-    data: lessons[lessonIndex]
-  });
 });
 
-// TEMPORARY: Verify this server is running
+// Health-check endpoint
 app.get('/api/test-put', (req, res) => {
   res.status(200).json({
     success: true,
@@ -159,7 +186,23 @@ app.use((req, res) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
-});
+// Connect to MongoDB before starting the server
+async function startServer() {
+  try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI is missing from the .env file');
+    }
+
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('Connected to MongoDB successfully');
+
+    app.listen(PORT, () => {
+      console.log(`Server is running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error.message);
+    process.exit(1);
+  }
+}
+
+startServer();
