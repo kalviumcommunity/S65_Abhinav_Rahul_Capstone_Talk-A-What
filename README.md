@@ -65,3 +65,10 @@ The Talk-A-What! backend API is deployed on Render.
 - **Backend URL:** https://s65-abhinav-rahul-capstone-talk-a-what.onrender.com
 - **Lessons API:** https://s65-abhinav-rahul-capstone-talk-a-what.onrender.com/api/lessons
 - **Platform:** Render
+
+
+## Deployed Application
+
+**Live Frontend:** https://peppy-caramel-3557da.netlify.app/
+
+The Talk-A-What! React frontend is deployed on Netlify.
