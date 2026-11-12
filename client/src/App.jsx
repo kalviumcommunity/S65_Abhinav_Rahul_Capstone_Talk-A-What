@@ -1,120 +1,98 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+
+import "./App.css"
+import Navbar from "./components/NavbarTemp"
+import HeroSection from "./components/HeroSection"
+import LessonCard from "./components/LessonCard"
+import ProgressCard from "./components/ProgressCard"
+import QuizCard from "./components/QuizCard"
+import Footer from "./components/Footer"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const lessons = [
+    {
+      id: 1,
+      title: "Everyday Conversations",
+      level: "Beginner",
+      duration: "10 min",
+      description: "Learn common English phrases used in daily conversations.",
+      icon: "💬",
+    },
+    {
+      id: 2,
+      title: "English Grammar Basics",
+      level: "Beginner",
+      duration: "15 min",
+      description: "Understand basic grammar rules and sentence formation.",
+      icon: "📚",
+    },
+    {
+      id: 3,
+      title: "Vocabulary Builder",
+      level: "Intermediate",
+      duration: "12 min",
+      description: "Improve your vocabulary with useful everyday words.",
+      icon: "📝",
+    },
+  ]
+
+  const quizzes = [
+    {
+      id: 1,
+      title: "Grammar Challenge",
+      questions: 10,
+      difficulty: "Easy",
+      category: "Grammar",
+    },
+    {
+      id: 2,
+      title: "Vocabulary Test",
+      questions: 15,
+      difficulty: "Medium",
+      category: "Vocabulary",
+    },
+  ]
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <Navbar />
+      <main>
+        <HeroSection />
 
-      <div className="ticks"></div>
+        <section className="lessons-section" id="lessons">
+          <div className="section-heading">
+            <p className="section-label">START LEARNING</p>
+            <h2>Explore Your Lessons</h2>
+            <p>Choose a lesson and build your English skills.</p>
+          </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          <div className="lesson-grid">
+            {lessons.map((lesson) => (
+              <LessonCard key={lesson.id} {...lesson} />
+            ))}
+          </div>
+        </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+        <ProgressCard
+          completedLessons={8}
+          totalLessons={20}
+          streak={5}
+        />
+
+        <section className="quizzes-section">
+          <div className="section-heading">
+            <p className="section-label">TEST YOUR KNOWLEDGE</p>
+            <h2>Practice with Quizzes</h2>
+            <p>Check what you have learned so far.</p>
+          </div>
+
+          <div className="quiz-grid">
+            {quizzes.map((quiz) => (
+              <QuizCard key={quiz.id} {...quiz} />
+            ))}
+          </div>
+        </section>
+      </main>
+      <Footer />
     </>
   )
 }
